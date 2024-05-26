@@ -18,9 +18,11 @@ const sequelize = new Sequelize(
 
 // 연결객체를 나중에 재사용하기 위해 db.sequelize에 넣어둔다.
 db.sequelize = sequelize;
-
+db.Sequelize = Sequelize;
+// Auth 모델 불러오기
+db.Auth = require('./auth')(sequelize, Sequelize);
 // User 모델 불러오기
-db.User = require('./user')(sequelize, Sequelize.DataTypes);
+db.User = require('./user')(sequelize, Sequelize);
 
 // 모듈로 꺼낸다.
 module.exports = db;
