@@ -23,8 +23,6 @@ router.post('/signup', async (req, res) => {
             return res.status(400).json({ error: 'Registration failed' });
         }
 
-        // 비밀번호 해시 처리
-        const hashedPassword = await bcrypt.hash(password, 10);
         // 새 사용자 및 인증 정보 생성
         const newUser = await User.create({
             _id,
@@ -33,7 +31,7 @@ router.post('/signup', async (req, res) => {
         });
         await Auth.create({
             userId: newUser._id,
-            password: hashedPassword,
+            password: password,
         });
 
         // JSON 형식으로 성공 메시지 반환
@@ -80,6 +78,10 @@ router.post('/login', async (req, res) => {
         console.error(err);
         res.status(500).json({ error: 'Internal server error' });
     }
+});
+
+router.post('/logout', (req, res) => {
+    res.status(200).json({ message: 'Logout successfully' });
 });
 
 module.exports = router;
