@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const swaggerUi = require('swagger-ui-express');
 const swaggerFile = require('./swagger/swagger-output');
+
 const path = require('path');
 const morgan = require('morgan');
 
@@ -20,16 +21,23 @@ sequelize
     });
 app.use(morgan('dev')); // 로그
 
+sequelize
+    .sync({ force: false })
+    .then(() => {
+        console.log('데이터베이스 연결됨.');
+    })
+    .catch((err) => {
+        console.error(err);
+    });
+app.use(morgan('dev')); // 로그
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
-const apiRouter = require('./routes/users');
 
 app.get('/', (req, res) => {
     res.json({ message: 'Hello World!' });
 });
 
-app.use('/user', apiRouter);
 app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
 // 포트넘버 설정
