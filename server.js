@@ -21,19 +21,14 @@ sequelize
     });
 app.use(morgan('dev')); // 로그
 
-sequelize
-    .sync({ force: false })
-    .then(() => {
-        console.log('데이터베이스 연결됨.');
-    })
-    .catch((err) => {
-        console.error(err);
-    });
-app.use(morgan('dev')); // 로그
+// users 라우트 모듈 가져오기
+const usersRouter = require('./routes/users');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+// users 라우트를 '/users' 경로에 연결
+app.use('/users', usersRouter);
 app.get('/', (req, res) => {
     res.json({ message: 'Hello World!' });
 });
