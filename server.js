@@ -1,14 +1,13 @@
-const express = require('express');
-const bodyParser = require('body-parser');
 const swaggerUi = require('swagger-ui-express');
 const swaggerFile = require('./swagger/swagger-output');
 
 const path = require('path');
 const morgan = require('morgan');
+const express = require("express");
+const bodyParser = require("body-parser");
 
-// index.js에 있는 db.sequelize 객체 모듈을 구조분해로 불러온다.
-const { sequelize } = require('./models/index');
 const app = express();
+
 const db = require('./models/index'); // 잠깐 테스트를 위해 만듬
 
 sequelize
@@ -27,15 +26,14 @@ const usersRouter = require('./routes/users');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// users 라우트를 '/users' 경로에 연결
-app.use('/users', usersRouter);
-app.get('/', (req, res) => {
-    res.json({ message: 'Hello World!' });
+app.get("/", (req, res) => {
+  res.json({ message: "Hello World!" });
 });
 
 app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
+
 // 포트넘버 설정
 app.listen(3000, () => {
-    console.log('Server is running on port 3000.');
+  console.log("Server is running on port 3000.");
 });
