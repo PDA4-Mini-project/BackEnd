@@ -22,6 +22,8 @@ db.Profile = require('./profile')(sequelize, Sequelize);
 db.User = require('./user')(sequelize, Sequelize);
 // Review 모델 불러오기
 db.Review = require('./review')(sequelize, Sequelize);
+// theme 모델 불러오기
+db.Theme = require('./theme')(sequelize, Sequelize);
 
 // 모듈로 꺼낸다.
 module.exports = db;
