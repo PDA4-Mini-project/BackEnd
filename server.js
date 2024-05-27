@@ -7,6 +7,9 @@ const morgan = require('morgan');
 const { sequelize } = require('./models/index');
 const app = express();
 
+// users 라우트 모듈 가져오기
+const usersRouter = require('./routes/users');
+
 sequelize
     .sync({ force: true })
     .then(() => {
@@ -20,10 +23,11 @@ app.use(morgan('dev')); // 로그
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+// users 라우트를 '/users' 경로에 연결
+app.use('/users', usersRouter);
 app.get('/', (req, res) => {
     res.json({ message: 'Hello World!' });
 });
-
 // 포트넘버 설정
 app.listen(3000, () => {
     console.log('Server is running on port 3000.');
