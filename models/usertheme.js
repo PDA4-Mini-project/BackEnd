@@ -21,7 +21,7 @@ module.exports = (sequelize, DataTypes) => {
                     key: 'theme_id',
                 },
                 onDelete: 'CASCADE',
-                opUpdate: 'CASCADE',
+                onUpdate: 'CASCADE',
                 comment: 'Theme 아이디',
             },
             exp: {
@@ -36,6 +36,21 @@ module.exports = (sequelize, DataTypes) => {
         },
         {
             timestamps: true,
+            hooks: {
+                afterUpdate: async (userTheme) => {
+                    console.log('hook 진입');
+
+                    const nextLevelInfo = await sequelize.models.Level.findOne({
+                        where: { level_id: userTheme.level },
+                    });
+
+                    if (nextLevelInfo && userTheme.exp >= nextLevelInfo.exp_amount) {
+                        userTheme.level += 1;
+                        userTheme.exp = 0;
+                        userTheme.save();
+                    }
+                },
+            },
         }
     );
 };

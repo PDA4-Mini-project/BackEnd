@@ -24,6 +24,12 @@ db.User = require('./user')(sequelize, Sequelize);
 db.Review = require('./review')(sequelize, Sequelize);
 // theme 모델 불러오기
 db.Theme = require('./theme')(sequelize, Sequelize);
+// level 모델 불러오기
+db.Level = require('./level')(sequelize, Sequelize);
+// waterBottle 모델 불러오기
+db.WaterBottle = require('./waterBottle')(sequelize, Sequelize);
+// userTheme 모델 불러오기
+db.userTheme = require('./userTheme')(sequelize, Sequelize);
 
 sequelize
     .sync({ force: true })
