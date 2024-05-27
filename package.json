@@ -1,21 +1,29 @@
 {
-  "name": "backend",
-  "version": "1.0.0",
-  "description": "PDA 4th Mini Project",
-  "main": "server.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon server.js"
-  },
-  "author": "PDA 4th Creator",
-  "license": "ISC",
-  "dependencies": {
-    "body-parser": "^1.20.2",
-    "cors": "^2.8.5",
-    "express": "^4.19.2",
-    "mysql": "^2.18.1"
-  },
-  "devDependencies": {
-    "nodemon": "^3.1.0"
-  }
+    "name": "backend",
+    "version": "1.0.0",
+    "description": "PDA 4th Mini Project",
+    "main": "server.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "predev": "node ./swagger/swagger.js",
+        "dev": "nodemon server.js"
+    },
+    "author": "PDA 4th Creator",
+    "license": "ISC",
+    "dependencies": {
+        "body-parser": "^1.20.2",
+        "cors": "^2.8.5",
+        "express": "^4.19.2",
+        "morgan": "^1.10.0",
+        "mysql": "^2.18.1",
+        "mysql2": "^3.9.7",
+        "sequelize": "^6.37.3",
+        "sequelize-cli": "^6.6.2",
+        "swagger-autogen": "^2.23.7",
+        "swagger-jsdoc": "^6.2.8",
+        "swagger-ui-express": "^5.0.0"
+    },
+    "devDependencies": {
+        "nodemon": "^3.1.0"
+    }
 }
