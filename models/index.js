@@ -25,5 +25,14 @@ db.Review = require('./review')(sequelize, Sequelize);
 // theme 모델 불러오기
 db.Theme = require('./theme')(sequelize, Sequelize);
 
+sequelize
+    .sync({ force: true })
+    .then(async () => {
+        console.log('데이터베이스 연결됨.');
+    })
+    .catch((err) => {
+        console.error(err);
+    });
+
 // 모듈로 꺼낸다.
 module.exports = db;
