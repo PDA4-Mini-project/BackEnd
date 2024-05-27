@@ -33,6 +33,7 @@ module.exports = (sequelize, DataTypes) => {
     User.hasOne(sequelize.models.Auth, {
         foreignKey: 'userId',
         as: 'auth',
+        onDelete: 'CASCADE',
     });
 
     return User;

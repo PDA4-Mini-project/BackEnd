@@ -2,6 +2,10 @@ const express = require('express');
 const router = express.Router();
 const { Sequelize, User, Auth } = require('../models');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
+
+const secretKey = process.env.SECRET_KEY;
 
 router.post('/signup', async (req, res) => {
     const { _id, name, email, password } = req.body;
@@ -21,7 +25,6 @@ router.post('/signup', async (req, res) => {
 
         // 비밀번호 해시 처리
         const hashedPassword = await bcrypt.hash(password, 10);
-
         // 새 사용자 및 인증 정보 생성
         const newUser = await User.create({
             _id,
@@ -36,8 +39,47 @@ router.post('/signup', async (req, res) => {
         // JSON 형식으로 성공 메시지 반환
         res.status(201).json({ message: 'User registered successfully' });
     } catch (err) {
+        //  배포 전 삭제할 것
         console.error(err); // 콘솔에 오류 출력
         res.status(500).json({ error: '회원가입 에러' });
     }
 });
+
+router.post('/login', async (req, res) => {
+    const { _id, password } = req.body;
+
+    try {
+        const user = await User.findOne({
+            where: { _id },
+        });
+        // TODO: 예러 출력 함수
+        if (!user) {
+            return res.status(400).json({ error: 'login failed' });
+        }
+
+        const authInfo = await Auth.findOne({
+            where: { userId: user._id },
+        });
+
+        if (!authInfo) {
+            return res.status(400).json({ error: 'login failed' });
+        }
+
+        const isMatch = await bcrypt.compare(password, authInfo.password);
+        if (!isMatch) {
+            return res.status(401).json({ error: 'Invalid credentials' });
+        }
+        // jwt 생성
+        // {클레임, 서명 시 사용하는 비밀키, 토큰 만료 시간}
+        // 만료되면 다시 인증 받거나 새 토큰 요청해야함
+        const token = jwt.sign({ userId: user._id, name: user.name }, secretKey, { expiresIn: '1h' });
+
+        res.json({ message: 'login successful', token });
+    } catch (err) {
+        // 배포 전 콘솔은 삭제할 것
+        console.error(err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 module.exports = router;
