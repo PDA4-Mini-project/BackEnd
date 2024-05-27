@@ -35,5 +35,12 @@ module.exports = (sequelize, DataTypes) => {
         as: 'auth',
     });
 
+    User.hasOne(sequelize.models.Profile, {
+        foreignKey: 'profile_id',
+        as: 'profile',
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+    });
+
     return User;
 };
