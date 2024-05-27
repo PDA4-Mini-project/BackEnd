@@ -14,7 +14,7 @@ router.post('/signup', async (req, res) => {
         // _id로 이미 유저가 존재하는지 check
         const existingUser = await User.findOne({
             where: {
-                [Sequelize.Op.or]: [{ _id }, { email }],
+                [Sequelize.Op.or]: [{ _id }, { name }, { email }],
             },
         });
 
