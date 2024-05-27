@@ -16,8 +16,12 @@ db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 // Auth 모델 불러오기
 db.Auth = require('./auth')(sequelize, Sequelize);
+// Profile 모델 불러오기
+db.Profile = require('./profile')(sequelize, Sequelize);
 // User 모델 불러오기
 db.User = require('./user')(sequelize, Sequelize);
+// Review 모델 불러오기
+db.Review = require('./review')(sequelize, Sequelize);
 
 // 모듈로 꺼낸다.
 module.exports = db;
