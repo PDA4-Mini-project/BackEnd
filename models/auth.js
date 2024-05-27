@@ -29,12 +29,6 @@ module.exports = (sequelize, DataTypes) => {
                     const salt = await bcrypt.genSalt(10);
                     auth.password = await bcrypt.hash(auth.password, salt);
                 },
-                beforeUpdate: async (auth) => {
-                    if (auth.changed('password')) {
-                        const salt = await bcrypt.genSalt(10);
-                        auth.password = await bcrypt.hash(auth.password, salt);
-                    }
-                },
             },
         }
     );
