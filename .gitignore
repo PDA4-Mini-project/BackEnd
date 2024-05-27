@@ -198,3 +198,6 @@ $RECYCLE.BIN/
 *.vsix
 config
 routes
+
+# env file
+.env
