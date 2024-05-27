@@ -7,18 +7,9 @@ const path = require('path');
 const morgan = require('morgan');
 
 // index.js에 있는 db.sequelize 객체 모듈을 구조분해로 불러온다.
-const { sequelize } = require('./models/index');
 const app = express();
 app.use(cors()); // temp
 
-sequelize
-    .sync({ force: true })
-    .then(async () => {
-        console.log('데이터베이스 연결됨.');
-    })
-    .catch((err) => {
-        console.error(err);
-    });
 app.use(morgan('dev')); // 로그
 
 // users 라우트 모듈 가져오기
