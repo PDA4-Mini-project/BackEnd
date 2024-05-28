@@ -17,6 +17,7 @@ app.use(morgan('dev')); // 로그
 const usersRouter = require('./routes/users');
 const gardensRouter = require('./routes/gardens');
 const ratesRouter = require('./routes/rates');
+const profileRouter = require('./routes/profile');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -24,7 +25,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/rates', ratesRouter);
 app.use('/users', usersRouter);
 app.use('/gardens', gardensRouter);
-
+app.use('/profile', profileRouter);
 
 app.get('/', (req, res) => {
     res.json({ message: 'Hello World!' });
