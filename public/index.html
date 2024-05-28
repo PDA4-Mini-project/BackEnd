@@ -7,31 +7,146 @@
         <h1>WebRTC Example</h1>
         <video id="localVideo" autoplay playsinline></video>
         <video id="remoteVideo" autoplay playsinline></video>
+        <button id="createGardenRoomButton">Create Garden Room</button>
+        <button id="joinRoomButton">Join Room</button>
+        <div id="roomsList"></div>
 
         <!-- WebRTC Adapter 라이브러리 로드 -->
         <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
-        <script>
-            // 비디오 요소 참조
+        <!-- Socket.io 클라이언트 라이브러리 로드 -->
+        <!-- <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>). -->
+        <script src="/socket.io/socket.io.js"></script>
+        <script >  
+
+            const socket = io();
+
+            const createGardenRoomButton = document.getElementById('createGardenRoomButton');
+            const joinRoomButton = document.getElementById('joinRoomButton');
+            const roomsList = document.getElementById('roomsList');
             const localVideo = document.getElementById('localVideo');
             const remoteVideo = document.getElementById('remoteVideo');
+            let localStream;
+            let peerConnection;
+            let currentRoomId; // 동적으로 설정될 방 ID
 
-            // 브라우저가 WebRTC를 지원하는지 확인
-            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                console.log('WebRTC not supported by this browser.');
-            } else {
-                // 로컬 비디오 스트림 가져오기
-                navigator.mediaDevices
-                    .getUserMedia({ video: true, audio: true })
-                    .then((stream) => {
-                        localVideo.srcObject = stream;
+            const constraints = { video: true, audio: true };
 
-                        // WebRTC 연결 설정 (예제에서는 단순히 로컬 스트림을 로컬 비디오 요소에 할당)
-                        // 실제 애플리케이션에서는 원격 피어와의 연결을 설정해야 함
-                    })
-                    .catch((error) => {
-                        console.error('Error accessing media devices.', error);
+            // 로컬 비디오 스트림 가져오기
+            navigator.mediaDevices
+                .getUserMedia(constraints)
+                .then((stream) => {
+                    localStream = stream;
+                    localVideo.srcObject = stream;
+                })
+                .catch((error) => {
+                    console.error('Error accessing media devices.', error);
+                });
+
+            // 방 생성
+            createGardenRoomButton.addEventListener('click', async () => {
+                const category = 'exampleCategory';
+                const _id = 'userid123'; // 실제 유저 ID로 설정해야 함
+                const time = new Date().toISOString();
+
+                try {
+                    const response = await fetch('/gardens/rooms', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ category, _id, time }),
                     });
+
+                    const data = await response.json();
+                    if (response.ok) {
+                        currentRoomId = data.roomId;
+                        console.log('Garden room created:', data);
+                        intoRoom();
+                    } else {
+                        console.error('Error creating Garden room:', data);
+                    }
+                } catch (error) {
+                    console.error('Error creating Garden room:', error);
+                }
+            });
+
+            // 방 목록 가져오기
+            async function fetchRooms() {
+                try {
+                    const response = await fetch('/gardens/rooms');
+                    const rooms = await response.json();
+                    roomsList.innerHTML = '';
+                    rooms.forEach((room) => {
+                        const roomElement = document.createElement('div');
+                        roomElement.textContent = `Room ID: ${room.roomId}, Category: ${room.category}`;
+                        roomElement.addEventListener('click', () => joinRoom(room.roomId));
+                        roomsList.appendChild(roomElement);
+                    });
+                } catch (error) {
+                    console.error('Error fetching rooms:', error);
+                }
             }
+
+            // 방에 참여
+            function joinRoom(roomId) {
+                currentRoomId = roomId;
+                socket.emit('joinRoom', roomId);
+            }
+
+            joinRoomButton.addEventListener('click', () => {
+                if (currentRoomId) {
+                    joinRoom(currentRoomId);
+                } else {
+                    console.error('No room ID available. Create a room first.');
+                }
+            });
+
+            socket.on('userJoined', (userId) => {
+                console.log(`User joined: ${userId}`);
+                if (!peerConnection) startPeerConnection();
+            });
+
+            socket.on('offer', async (offer) => {
+                await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+                const answer = await peerConnection.createAnswer();
+                await peerConnection.setLocalDescription(answer);
+                socket.emit('answer', { roomId: currentRoomId, answer });
+            });
+
+            socket.on('answer', async (answer) => {
+                await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
+            });
+
+            socket.on('candidate', async (candidate) => {
+                await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+            });
+
+            function startPeerConnection() {
+                peerConnection = new RTCPeerConnection();
+
+                peerConnection.onicecandidate = (event) => {
+                    if (event.candidate) {
+                        socket.emit('candidate', { roomId: currentRoomId, candidate: event.candidate });
+                    }
+                };
+
+                peerConnection.ontrack = (event) => {
+                    remoteVideo.srcObject = event.streams[0];
+                };
+
+                localStream.getTracks().forEach((track) => {
+                    peerConnection.addTrack(track, localStream);
+                });
+
+                peerConnection.onnegotiationneeded = async () => {
+                    const offer = await peerConnection.createOffer();
+                    await peerConnection.setLocalDescription(offer);
+                    socket.emit('offer', { roomId: currentRoomId, offer });
+                };
+            }
+
+            // 초기 방 목록 가져오기
+            fetchRooms();
         </script>
     </body>
 </html>
