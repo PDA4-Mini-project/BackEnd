@@ -8,6 +8,8 @@ const client = createClient();
 })();
 
 router.post('/rooms', async (req, res) => {
+    //  #swagger.description = '정원 정보 저장'
+    //  #swagger.tags = ['Gardens']
     const { roomId, _id, time, category } = req.body;
     if (!roomId || !_id || !time || !category) {
         return res.status(400).send('All fields (roomId, _id, time, category) are required');
@@ -26,6 +28,8 @@ router.post('/rooms', async (req, res) => {
 });
 
 router.get('/rooms', async (req, res) => {
+    //  #swagger.description = '정원 목록 조회'
+    //  #swagger.tags = ['Gardens']
     try {
         // Redis에서 'roomId'와 일치하는 모든 키를 가져옴
         const keys = await client.keys('*');
