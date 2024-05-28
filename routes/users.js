@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { Sequelize, sequelize, User, Auth, Profile, Review } = require('../models');
+const { Sequelize, sequelize, User, Auth, Profile, Review, WaterBottle } = require('../models');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
@@ -63,6 +63,12 @@ router.post('/signup', async (req, res) => {
             },
             { transaction }
         );
+        await WaterBottle.create(
+            {
+                WaterBottle: newUser._id,
+            },
+            { transaction }
+        );
 
         //트랜잭션 커밋
         await transaction.commit();
@@ -76,6 +82,8 @@ router.post('/signup', async (req, res) => {
 });
 
 router.post('/login', async (req, res) => {
+    console.log(req.body);
+    console.log('요청옴');
     const { _id, password } = req.body;
 
     try {
