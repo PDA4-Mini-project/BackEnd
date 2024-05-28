@@ -26,6 +26,14 @@ module.exports = (sequelize, DataTypes) => {
         },
         {
             timestamps: true,
+            hooks: {
+                afterUpdate: async (review) => {
+                    console.log(review.review_score);
+                    review.review_count += 1;
+                    review.review_score = Math.ceil(review.review_score / (review.review_count + 1));
+                    review.save();
+                },
+            },
         }
     );
 };

@@ -16,14 +16,16 @@ app.use(morgan('dev')); // 로그
 // users 라우트 모듈 가져오기
 const usersRouter = require('./routes/users');
 const gardensRouter = require('./routes/gardens');
-app.use(express.json());
-
+const ratesRouter = require('./routes/rates');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // users 라우트를 '/users' 경로에 연결
+app.use('/rates', ratesRouter);
 app.use('/users', usersRouter);
 app.use('/gardens', gardensRouter);
+
+
 app.get('/', (req, res) => {
     res.json({ message: 'Hello World!' });
 });
