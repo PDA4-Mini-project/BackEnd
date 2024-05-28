@@ -13,16 +13,16 @@ module.exports = (sequelize, DataTypes) => {
                 onUpdate: 'CASCADE',
                 comment: 'User 아이디',
             },
-            theme_id: {
-                type: DataTypes.INTEGER,
+            theme_name: {
+                type: DataTypes.STRING,
                 primaryKey: true,
                 references: {
                     model: 'themes',
-                    key: 'theme_id',
+                    key: 'name',
                 },
                 onDelete: 'CASCADE',
                 onUpdate: 'CASCADE',
-                comment: 'Theme 아이디',
+                comment: 'Theme 이름',
             },
             exp: {
                 type: DataTypes.INTEGER,
