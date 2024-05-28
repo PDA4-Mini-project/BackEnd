@@ -77,13 +77,12 @@ router.post('/signup', async (req, res) => {
         res.status(201).json({ message: 'User registered successfully' });
     } catch (err) {
         await transaction.rollback();
+        console.log(err);
         res.status(500).json({ error: '회원가입 에러' });
     }
 });
 
 router.post('/login', async (req, res) => {
-    console.log(req.body);
-    console.log('요청옴');
     const { _id, password } = req.body;
 
     try {
@@ -111,8 +110,12 @@ router.post('/login', async (req, res) => {
         // {클레임, 서명 시 사용하는 비밀키, 토큰 만료 시간}
         // 만료되면 다시 인증 받거나 새 토큰 요청해야함
         const token = jwt.sign({ userId: user._id, name: user.name }, secretKey, { expiresIn: '1h' });
+        res.cookie('authToken', token, {
+            httpOnly: true,
+            axAge: 3600000,
+        });
 
-        res.json({ message: 'login successful', token });
+        res.json({ message: 'login successful', _id: user._id });
     } catch (err) {
         // 배포 전 콘솔은 삭제할 것
         console.error(err);
