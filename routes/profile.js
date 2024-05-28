@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { Sequelize, Review, Profile, userTheme } = require('../models');
+const { Sequelize, Review, Profile, userTheme, User } = require('../models');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
@@ -36,8 +36,16 @@ router.get('/:userId', async (req, res) => {
                 review_id: user_id,
             },
         });
+        // 유저 이름
+        const userInfo = await User.findOne({
+            where: {
+                _id: user_id,
+            },
+        });
 
-        res.status(201).json({ profile, reviewInfo, userThemes });
+        const userName = { userName: userInfo.name };
+
+        res.status(201).json({ profile, reviewInfo, userName, userThemes });
     } catch (err) {
         res.status(500).json({ error: '프로필 조회 에러' });
     }
