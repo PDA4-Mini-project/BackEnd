@@ -38,8 +38,6 @@ module.exports = (sequelize, DataTypes) => {
             timestamps: true,
             hooks: {
                 afterUpdate: async (userTheme) => {
-                    console.log('hook 진입');
-
                     const nextLevelInfo = await sequelize.models.Level.findOne({
                         where: { level_id: userTheme.level },
                     });
