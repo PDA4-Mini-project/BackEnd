@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>WebRTC Example</title>
+    </head>
+    <body>
+        <h1>WebRTC Example</h1>
+        <video id="localVideo" autoplay playsinline></video>
+        <video id="remoteVideo" autoplay playsinline></video>
+
+        <!-- WebRTC Adapter 라이브러리 로드 -->
+        <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+        <script>
+            // 비디오 요소 참조
+            const localVideo = document.getElementById('localVideo');
+            const remoteVideo = document.getElementById('remoteVideo');
+
+            // 브라우저가 WebRTC를 지원하는지 확인
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                console.log('WebRTC not supported by this browser.');
+            } else {
+                // 로컬 비디오 스트림 가져오기
+                navigator.mediaDevices
+                    .getUserMedia({ video: true, audio: true })
+                    .then((stream) => {
+                        localVideo.srcObject = stream;
+
+                        // WebRTC 연결 설정 (예제에서는 단순히 로컬 스트림을 로컬 비디오 요소에 할당)
+                        // 실제 애플리케이션에서는 원격 피어와의 연결을 설정해야 함
+                    })
+                    .catch((error) => {
+                        console.error('Error accessing media devices.', error);
+                    });
+            }
+        </script>
+    </body>
+</html>
