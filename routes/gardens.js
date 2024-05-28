@@ -23,7 +23,7 @@ router.post('/rooms', async (req, res) => {
             time: time,
             theme: category,
         });
-        res.send('Room data saved successfully');
+        res.status(200).json({ message: 'Room data saved successfully', roomId: roomId });
     } catch (err) {
         return res.status(500).send('Error saving to Redis: ' + err.message);
     }
