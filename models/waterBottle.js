@@ -15,6 +15,7 @@ module.exports = (sequelize, DataTypes) => {
             },
             bottle_count: {
                 type: DataTypes.INTEGER,
+                defaultValue: 3,
                 comment: '잔여 물뿌리개 갯수',
             },
         },
