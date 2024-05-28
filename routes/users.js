@@ -65,7 +65,7 @@ router.post('/signup', async (req, res) => {
         );
         await WaterBottle.create(
             {
-                WaterBottle: newUser._id,
+                waterBottle_id: newUser._id,
             },
             { transaction }
         );
