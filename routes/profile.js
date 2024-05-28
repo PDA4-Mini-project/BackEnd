@@ -43,4 +43,76 @@ router.get('/:userId', async (req, res) => {
     }
 });
 
+router.post('/image', async (req, res) => {
+    //  #swagger.description = '프로필 이미지 수정'
+    //  #swagger.tags = ['PROFILE']
+
+    const { user_id, profile_img_url } = req.body;
+
+    try {
+        const profile = await Profile.findOne({
+            where: {
+                profile_id: user_id,
+            },
+        });
+
+        if (profile) {
+            await profile.update({ image_url: profile_img_url });
+            res.status(201).json({ message: 'Profile image change Successful!' });
+        } else {
+            res.status(404).json({ error: '프로필을 찾을 수 없습니다.' });
+        }
+    } catch (err) {
+        res.status(500).json({ error: '프로필 변경 실패 에러' });
+    }
+});
+
+router.post('/portfolio', async (req, res) => {
+    //  #swagger.description = '포트폴리오 수정'
+    //  #swagger.tags = ['PROFILE']
+
+    const { user_id, portfolio_url } = req.body;
+
+    try {
+        const profile = await Profile.findOne({
+            where: {
+                profile_id: user_id,
+            },
+        });
+
+        if (profile) {
+            await profile.update({ portfolio_url: portfolio_url });
+            res.status(201).json({ message: 'portfolio change Successful!' });
+        } else {
+            res.status(404).json({ error: '포트폴리오 수정을 위한 회원이 존재하지 않습니다.' });
+        }
+    } catch (err) {
+        res.status(500).json({ error: '포트폴리오 변경 실패' });
+    }
+});
+
+router.post('/intro', async (req, res) => {
+    //  #swagger.description = '소개글 수정'
+    //  #swagger.tags = ['PROFILE']
+
+    const { user_id, content } = req.body;
+
+    try {
+        const profile = await Profile.findOne({
+            where: {
+                profile_id: user_id,
+            },
+        });
+
+        if (profile) {
+            await profile.update({ introduction: content });
+            res.status(201).json({ message: 'profile introduction change Successful!' });
+        } else {
+            res.status(404).json({ error: '마이페이지 소개글 수정을 위한 회원이 존재하지 않습니다.' });
+        }
+    } catch (err) {
+        res.status(500).json({ error: '소개글 변경 실패' });
+    }
+});
+
 module.exports = router;
