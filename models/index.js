@@ -32,7 +32,7 @@ db.WaterBottle = require('./waterBottle')(sequelize, Sequelize);
 db.UserTheme = require('./userTheme')(sequelize, Sequelize);
 
 sequelize
-    .sync({ force: true })
+    .sync({ force: false })
     .then(async () => {
         console.log('데이터베이스 연결됨.');
     })
