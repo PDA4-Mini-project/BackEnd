@@ -27,7 +27,7 @@ router.post('/rooms', async (req, res) => {
         const image_url = profile
             ? profile.image_url
             : 'https://images.unsplash.com/photo-1709588191280-acd9303db2cc?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxleHBsb3JlLWZlZWR8NHx8fGVufDB8fHx8fA%3D%3D';
-
+        const createdAt = new Date().toISOString();
         const roomId = uuidv4(); // 임의의 roomId 생성
         await client.hSet(roomId, {
             _id: _id,
@@ -36,6 +36,7 @@ router.post('/rooms', async (req, res) => {
             category: category,
             title: title,
             image_url: image_url,
+            createdAt: createdAt,
         });
         res.status(200).json({ message: 'Room data saved successfully', roomId: roomId });
     } catch (err) {
