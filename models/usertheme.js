@@ -6,7 +6,7 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.STRING(30),
                 primaryKey: true,
                 references: {
-                    model: 'users',
+                    model: 'Users',
                     key: '_id',
                 },
                 onDelete: 'CASCADE',
@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.STRING,
                 primaryKey: true,
                 references: {
-                    model: 'themes',
+                    model: 'Themes',
                     key: 'name',
                 },
                 onDelete: 'CASCADE',

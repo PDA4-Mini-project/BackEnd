@@ -7,7 +7,7 @@ module.exports = (sequelize, DataTypes) => {
                 primaryKey: true,
                 comment: '사용자 ID',
                 references: {
-                    model: 'users',
+                    model: 'Users',
                     key: '_id',
                 },
             },

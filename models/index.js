@@ -29,7 +29,7 @@ db.Level = require('./level')(sequelize, Sequelize);
 // waterBottle 모델 불러오기
 db.WaterBottle = require('./waterBottle')(sequelize, Sequelize);
 // userTheme 모델 불러오기
-db.userTheme = require('./userTheme')(sequelize, Sequelize);
+db.UserTheme = require('./userTheme')(sequelize, Sequelize);
 
 sequelize
     .sync({ force: true })
