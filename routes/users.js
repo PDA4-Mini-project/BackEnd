@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { Sequelize, sequelize, Theme, User, Auth, Profile, Review, WaterBottle, userTheme } = require('../models');
+const { Sequelize, sequelize, Theme, User, Auth, Profile, Review, WaterBottle, UserTheme } = require('../models');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
@@ -76,7 +76,7 @@ router.post('/signup', async (req, res) => {
         const allThemes = await Theme.findAll();
 
         for (const theme of allThemes) {
-            await userTheme.create({
+            await UserTheme.create({
                 user_id: newUser._id,
                 theme_name: theme.name,
                 exp: 0,

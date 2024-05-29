@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
             timestamps: true,
             indexes: [
                 {
-                    unique: false,
+                    unique: true,
                     fields: ['name'],
                 },
             ],
