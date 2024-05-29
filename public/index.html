@@ -7,6 +7,7 @@
     <h1>WebRTC Example</h1>
     <video id="localVideo" autoplay playsinline></video>
     <video id="remoteVideo" autoplay playsinline></video>
+
     <button id="createGardenRoomButton">Create Garden Room</button>
     <button id="joinRoomButton">Join Room</button>
     <h2>Available Rooms</h2>
@@ -30,10 +31,12 @@
 
         const constraints = { video: true, audio: true };
 
-        // 로컬 비디오 스트림 가져오기
+        
+            // 로컬 비디오 스트림 가져오기
         navigator.mediaDevices
             .getUserMedia(constraints)
             .then((stream) => {
+                console.log("stream", stream)
                 localStream = stream;
                 localVideo.srcObject = stream;
             })
@@ -84,7 +87,7 @@
                     roomElement.textContent = `Room ID: ${room.roomId}, Category: ${room.category}`;
                     const joinButton = document.createElement('button');
                     joinButton.textContent = 'Join Room';
-                    joinButton.addEventListener('click', () => requestJoinRoom(room.roomId)); // 방 참여 버튼에 클릭 이벤트 추가
+                    joinButton.addEventListener('click', () => requestJoinRoom(room.roomId,'abc')); // 방 참여 버튼에 클릭 이벤트 추가
                     roomElement.appendChild(joinButton);
                     roomsList.appendChild(roomElement);
                 });
@@ -102,8 +105,10 @@
         }
 
         joinRoomButton.addEventListener('click', () => {
+            const _id = "id1"; // 실제 유저 ID로 설정해야 함
+
             if (currentRoomId) {
-                requestJoinRoom(currentRoomId); // 방 ID가 있으면 방 참여 요청
+                requestJoinRoom(currentRoomId, _id); // 방 ID가 있으면 방 참여 요청
             } else {
                 console.error('No room ID available. Create a room first.');
             }
@@ -129,7 +134,7 @@
         socket.on('candidate', async (candidate) => {
             await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
         });
-
+        
         // 피어 연결 시작
         function startPeerConnection() {
             peerConnection = new RTCPeerConnection();
@@ -140,13 +145,31 @@
                 }
             };
 
-            peerConnection.ontrack = (event) => {
-                remoteVideo.srcObject = event.streams[0];
+            peerConnection.ontrack = (ev) => {
+                console.log("onTrack")
+                console.log(ev)
+                if (ev.streams && ev.streams[0]) {
+                    remoteVideo.srcObject = ev.streams[0];
+                  } else {
+                    let inboundStream = new MediaStream(ev.track);
+                    remoteVideo.srcObject = inboundStream;
+                  }
+                // remoteVideo.srcObject = event.streams[0];
+                //const inboundStream = new MediaStream();
+                //remoteVideo.srcObject = inboundStream
+                //inboundStream.addTrack(event.track)
+                //console.log(remoteVideo)
             };
-
+            
+            
             localStream.getTracks().forEach((track) => {
+                console.log('track',track)
+                console.log("localStream", localStream)
+                
                 peerConnection.addTrack(track, localStream);
+
             });
+
 
             peerConnection.onnegotiationneeded = async () => {
                 const offer = await peerConnection.createOffer();
