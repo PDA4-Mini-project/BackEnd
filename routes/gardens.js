@@ -37,6 +37,7 @@ router.post('/rooms', async (req, res) => {
             title: title,
             image_url: image_url,
             createdAt: createdAt,
+            roomdId: roomId,
         });
         res.status(200).json({ message: 'Room data saved successfully', roomId: roomId });
     } catch (err) {
