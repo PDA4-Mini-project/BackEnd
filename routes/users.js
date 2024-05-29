@@ -141,4 +141,43 @@ router.post('/logout', (req, res) => {
     res.status(200).json({ message: 'Logout successfully' });
 });
 
+router.post('/:userId/consume', async (req, res) => {
+    // #swagger.description = '유저 물뿌리개 감소'
+    //  #swagger.tags = ['users']
+
+    const { userId } = req.params;
+    const { playTime } = req.body;
+
+    try {
+        let requestTime = parseInt(playTime, 10);
+
+        if (isNaN(requestTime) || requestTime % 30 !== 0) {
+            return res.status(406).json({ error: 'Invalid PlayTime' });
+        }
+
+        //요청한 만큼 소비 가능한지 유효성 검사
+        const consumeCount = requestTime / 30;
+
+        const playUser = await WaterBottle.findOne({
+            where: {
+                waterBottle_id: userId,
+            },
+        });
+
+        if (!playUser) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        if (playUser.bottle_count < consumeCount) {
+            return res.status(402).json({ error: 'Insufficient tickets to start the game.' });
+        }
+
+        playUser.bottle_count -= consumeCount;
+        await playUser.save();
+        return res.status(200).json({ message: 'Game started successfully.' });
+    } catch (err) {
+        res.status(500).json({ error: 'server Error' });
+    }
+});
+
 module.exports = router;
