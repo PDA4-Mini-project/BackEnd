@@ -36,6 +36,17 @@ router.get('/:userId', async (req, res) => {
                 review_id: user_id,
             },
         });
+
+        let averageScore = Math.ceil(reviewInfo.review_score / reviewInfo.review_count);
+        if (averageScore > 5) {
+            averageScore = 5;
+        }
+        const reviewData = {
+            average_score: averageScore,
+        };
+
+        console.log(reviewData);
+
         // 유저 이름
         const userInfo = await User.findOne({
             where: {
@@ -45,7 +56,7 @@ router.get('/:userId', async (req, res) => {
 
         const userName = { userName: userInfo.name };
 
-        res.status(201).json({ profile, reviewInfo, userName, userThemes });
+        res.status(201).json({ profile, reviewData, userName, userThemes });
     } catch (err) {
         res.status(500).json({ error: '프로필 조회 에러' });
     }
