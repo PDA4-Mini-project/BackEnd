@@ -129,8 +129,6 @@ router.post('/login', async (req, res) => {
 
         res.json({ message: 'login successful', _id: user._id });
     } catch (err) {
-        // 배포 전 콘솔은 삭제할 것
-        console.error(err);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
@@ -177,6 +175,31 @@ router.post('/:userId/consume', async (req, res) => {
         return res.status(200).json({ message: 'Game started successfully.' });
     } catch (err) {
         res.status(500).json({ error: 'server Error' });
+    }
+});
+
+router.patch('/:userId/nickName', async (req, res) => {
+    // #swagger.description = '유저 닉네임 변경'
+    // #swagger.tags = ['users']
+    const { userId } = req.params;
+    const { nickName } = req.body;
+
+    try {
+        const user = await User.findOne({
+            where: {
+                _id: userId,
+            },
+        });
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        user.name = nickName;
+        user.save();
+
+        return res.status(200).json({ message: 'Nickname update successful!!' });
+    } catch (err) {
+        res.status(500).json({ error: 'Internal sever error' });
     }
 });
 
