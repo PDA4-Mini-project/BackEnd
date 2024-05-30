@@ -12,16 +12,15 @@ module.exports = (server) => {
 
         socket.on('candidate', ({ roomId, candidate }) => {
             console.log('Candidate received:', candidate);
+            console.log(roomId);
             socket.to(roomId).emit('candidate', { candidate });
         });
 
         socket.on('offer', ({ roomId, offer }) => {
-            console.log('Offer received:', offer);
             socket.to(roomId).emit('offer', offer);
         });
 
         socket.on('answer', ({ roomId, answer }) => {
-            console.log('Answer received:', answer);
             socket.to(roomId).emit('answer', answer);
         });
 
