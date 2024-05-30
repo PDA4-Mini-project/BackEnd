@@ -31,6 +31,23 @@ module.exports = (server) => {
             socket.to(roomId).emit('answer', answer);
         });
 
+        socket.on('readyStateChanged', async ({ roomId, userId, ready }) => {
+            async function getRoomInfo(roomId) {
+                return await client.hGetAll(roomId);
+            }
+            const room_info = await getRoomInfo(roomId);
+            const host_id = room_info._id;
+            socket.to(roomId).emit('readyStateChanged', { userId: host_id, ready });
+        });
+        socket.on('canStartStateChanged', async ({ roomId, userId, canStart }) => {
+            async function getRoomInfo(roomId) {
+                return await client.hGetAll(roomId);
+            }
+            const room_info = await getRoomInfo(roomId);
+            const host_id = room_info._id;
+            console.log('canStartStateChange ${host_id}, ${start}');
+            socket.to(roomId).emit('canStartStateChanged', { userId: host_id, canStart });
+        });
         socket.on('joinRoom', async ({ roomId, userId }) => {
             // 방에 들어오면 CNT 증가해야 함
             const roomData = await client.HGETALL(roomId);
@@ -54,7 +71,6 @@ module.exports = (server) => {
                 //현재 들어온 유저가 방장이 아닌 경우 인원 수 증가
                 // 게스트 ID 설정
                 await client.HSET(roomId, 'guest_id', userId);
-
             }
 
             // 방에 새로운 사용자가 참여했다는 것을 방의 모든 사용자에게 알림

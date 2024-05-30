@@ -168,4 +168,66 @@ router.patch('/end', async (req, res) => {
     }
 });
 
+router.patch('/start', async (req, res) => {
+    //  #swagger.description = '정원 이용 시작 전 물뿌리개 감소'
+    //  #swagger.tags = ['Gardens']
+
+    const { roomId } = req.body;
+
+    const transaction = await sequelize.transaction();
+    try {
+        // 유효성 검사
+        console.log('start에서의 roomId', roomId);
+        if (!roomId) {
+            return res.status(400).json({ error: 'Missing required parameters' });
+        }
+
+        // 트랜잭션에 필요한 데이터 추출
+        const roomData = await client.HGETALL(roomId);
+        if (!roomData) {
+            await transaction.rollback();
+            return res.status(404).json({ error: 'Room not found' });
+        }
+
+        const guestId = roomData.guest_id;
+        if (!guestId) {
+            await transaction.rollback();
+            return res.status(404).json({ error: 'Guest not found' });
+        }
+
+        // 시간 기반 물뿌리개 감소 계산
+        const playTime = parseInt(roomData.time, 10); // roomData에서 'time' 값을 가져옴
+        const bottlesToDecrease = Math.floor(playTime / 30); // 30분당 1개 감소
+
+        // 물뿌리개 정보 조회 및 감소
+        const bottleInfo = await WaterBottle.findOne({
+            where: {
+                waterBottle_id: guestId,
+            },
+            transaction,
+        });
+
+        if (!bottleInfo) {
+            await transaction.rollback();
+            return res.status(404).json({ error: 'Water bottle not found' });
+        }
+
+        // 물뿌리개 감소 (예: 1 감소)
+        if (bottleInfo.bottle_count >= bottlesToDecrease) {
+            bottleInfo.bottle_count -= bottlesToDecrease;
+            await bottleInfo.save({ transaction });
+        } else {
+            await transaction.rollback();
+            return res.status(400).json({ error: 'Insufficient water bottle count' });
+        }
+
+        await transaction.commit();
+
+        return res.status(200).json({ message: 'Garden usage started successfully!' });
+    } catch (err) {
+        if (transaction) await transaction.rollback();
+        res.status(500).json({ error: 'Internal server error', details: err.message });
+    }
+});
+
 module.exports = router;
