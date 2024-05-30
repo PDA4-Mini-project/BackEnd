@@ -1,6 +1,13 @@
 const socketIo = require('socket.io');
+const { createClient } = require('redis');
+const client = createClient();
 
 module.exports = (server) => {
+    (async () => {
+        await client.connect();
+        //console.log('Connected to Redis');
+    })();
+
     const io = socketIo(server, {
         cors: {
             origin: '*', // 실제 배포시에는 보다 구체적인 호스트 지정이 필요
@@ -8,11 +15,9 @@ module.exports = (server) => {
     });
 
     io.on('connection', (socket) => {
-        console.log('A user connected:', socket.id);
+        //console.log('A user connected:', socket.id);
 
         socket.on('candidate', ({ roomId, candidate }) => {
-            console.log('Candidate received:', candidate);
-            console.log(roomId);
             socket.to(roomId).emit('candidate', { candidate });
         });
 
@@ -24,22 +29,37 @@ module.exports = (server) => {
             socket.to(roomId).emit('answer', answer);
         });
 
-        socket.on('joinRoom', ({ roomId, userId }) => {
-            socket.join(roomId);
-            console.log('User joined room:', roomId);
-            console.log(`User ID: ${userId}`);
+        socket.on('joinRoom', async ({ roomId, userId }) => {
+            // 방에 들어오면 CNT 증가해야 함
+            const roomData = await client.HGETALL(roomId);
 
             // 방에 있는 사용자 수 확인
             const room = io.sockets.adapter.rooms.get(roomId);
-            const numClients = room ? room.size : 0;
-            console.log(`Number of clients in room ${roomId}: ${numClients}`);
+            let numClients = room ? room.size : 0;
 
+            if (parseInt(`${numClients}`, 10) + 1 > 2) {
+                //2명 이상인 경우 참여 불가.
+                socket.emit('roomFull', roomId);
+                return;
+            }
+
+            // 방 입장
+            socket.join(roomId);
+            await client.HSET(roomId, 'user_cnt', parseInt(`${numClients}`, 10) + 1);
+
+            if (!(roomData._id === userId)) {
+                console.log('새로운 유저 등장');
+                //현재 들어온 유저가 방장이 아닌 경우 인원 수 증가
+                // 게스트 ID 설정
+                await client.HSET(roomId, 'guest_id', userId);
+            }
+            const room_info = await client.HGETALL(roomId);
+            const host_id = room_info._id;
             // 방에 새로운 사용자가 참여했다는 것을 방의 모든 사용자에게 알림
-            socket.to(roomId).emit('userJoined', { userId, numClients });
+            socket.to(roomId).emit('userJoined', { userId, numClients, host_id });
 
             // 사용자가 방을 떠날 때 처리
             socket.on('disconnect', () => {
-                console.log('User disconnected:', socket.id);
                 socket.to(roomId).emit('userLeft', userId);
                 socket.leave(roomId);
             });
