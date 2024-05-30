@@ -3,7 +3,7 @@ const swaggerAutogen = require('swagger-autogen')({ openapi: '3.0.0', language: 
 const options = {
     info: {
         title: '쏙쏙가든 API docs',
-        description: 'PDA-4th 미니프로젝트 쏙쏙 가든 API 관리',
+        description: 'PDA-4th 미니프로젝트 쏙쏙 가든 API',
     },
     servers: [
         {

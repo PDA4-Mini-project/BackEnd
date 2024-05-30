@@ -6,23 +6,23 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.STRING(30),
                 primaryKey: true,
                 references: {
-                    model: 'users',
+                    model: 'Users',
                     key: '_id',
                 },
                 onDelete: 'CASCADE',
                 onUpdate: 'CASCADE',
                 comment: 'User 아이디',
             },
-            theme_id: {
-                type: DataTypes.INTEGER,
+            theme_name: {
+                type: DataTypes.STRING,
                 primaryKey: true,
                 references: {
-                    model: 'themes',
-                    key: 'theme_id',
+                    model: 'Themes',
+                    key: 'name',
                 },
                 onDelete: 'CASCADE',
                 onUpdate: 'CASCADE',
-                comment: 'Theme 아이디',
+                comment: 'Theme 이름',
             },
             exp: {
                 type: DataTypes.INTEGER,

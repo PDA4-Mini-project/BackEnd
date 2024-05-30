@@ -1,0 +1,358 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "쏙쏙가든 API docs",
+    "description": "PDA-4th 미니프로젝트 쏙쏙 가든 API 관리",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000"
+    }
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "성공"
+          }
+        }
+      }
+    },
+    "/rates/": {
+      "post": {
+        "tags": [
+          "REVIEWS"
+        ],
+        "description": "리뷰 등록",
+        "responses": {
+          "201": {
+            "description": "작성됨"
+          },
+          "400": {
+            "description": "잘못된 요청"
+          },
+          "500": {
+            "description": "내부 서버 오류"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "review_id": {
+                    "example": "any"
+                  },
+                  "review_score": {
+                    "example": "any"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/signup": {
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "description": "유저 등록",
+        "responses": {
+          "201": {
+            "description": "작성됨"
+          },
+          "400": {
+            "description": "잘못된 요청"
+          },
+          "500": {
+            "description": "내부 서버 오류"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "_id": {
+                    "example": "any"
+                  },
+                  "name": {
+                    "example": "any"
+                  },
+                  "email": {
+                    "example": "any"
+                  },
+                  "password": {
+                    "example": "any"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/login": {
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "description": "유저 로그인",
+        "responses": {
+          "200": {
+            "description": "성공"
+          },
+          "400": {
+            "description": "잘못된 요청"
+          },
+          "401": {
+            "description": "권한 없음"
+          },
+          "500": {
+            "description": "내부 서버 오류"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "_id": {
+                    "example": "any"
+                  },
+                  "password": {
+                    "example": "any"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/logout": {
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "description": "유저 로그아웃",
+        "responses": {
+          "200": {
+            "description": "성공"
+          }
+        }
+      }
+    },
+    "/gardens/rooms": {
+      "post": {
+        "tags": [
+          "Gardens"
+        ],
+        "description": "정원 정보 저장",
+        "responses": {
+          "200": {
+            "description": "성공"
+          },
+          "400": {
+            "description": "잘못된 요청"
+          },
+          "500": {
+            "description": "내부 서버 오류"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "roomId": {
+                    "example": "any"
+                  },
+                  "_id": {
+                    "example": "any"
+                  },
+                  "time": {
+                    "example": "any"
+                  },
+                  "category": {
+                    "example": "any"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Gardens"
+        ],
+        "description": "정원 목록 조회",
+        "responses": {
+          "200": {
+            "description": "성공"
+          },
+          "500": {
+            "description": "내부 서버 오류"
+          }
+        }
+      }
+    },
+    "/profile/{userId}": {
+      "get": {
+        "tags": [
+          "PROFILE"
+        ],
+        "description": "멤버 프로필 조회",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "작성됨"
+          },
+          "400": {
+            "description": "잘못된 요청"
+          },
+          "500": {
+            "description": "내부 서버 오류"
+          }
+        }
+      }
+    },
+    "/profile/image": {
+      "post": {
+        "tags": [
+          "PROFILE"
+        ],
+        "description": "프로필 이미지 수정",
+        "responses": {
+          "201": {
+            "description": "작성됨"
+          },
+          "404": {
+            "description": "찾을 수 없음"
+          },
+          "500": {
+            "description": "내부 서버 오류"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_id": {
+                    "example": "any"
+                  },
+                  "profile_img_url": {
+                    "example": "any"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/profile/portfolio": {
+      "post": {
+        "tags": [
+          "PROFILE"
+        ],
+        "description": "포트폴리오 수정",
+        "responses": {
+          "201": {
+            "description": "작성됨"
+          },
+          "404": {
+            "description": "찾을 수 없음"
+          },
+          "500": {
+            "description": "내부 서버 오류"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_id": {
+                    "example": "any"
+                  },
+                  "portfolio_url": {
+                    "example": "any"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/profile/intro": {
+      "post": {
+        "tags": [
+          "PROFILE"
+        ],
+        "description": "소개글 수정",
+        "responses": {
+          "201": {
+            "description": "작성됨"
+          },
+          "404": {
+            "description": "찾을 수 없음"
+          },
+          "500": {
+            "description": "내부 서버 오류"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_id": {
+                    "example": "any"
+                  },
+                  "content": {
+                    "example": "any"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "in": "header",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}

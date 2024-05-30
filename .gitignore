@@ -1,5 +1,3 @@
-#DB 설정파일
-config/*
 # Logs
 logs
 *.log
@@ -197,7 +195,6 @@ $RECYCLE.BIN/
 # Built Visual Studio Code Extensions
 *.vsix
 config
-routes
 
 # env file
 .env

@@ -15,6 +15,12 @@ module.exports = (sequelize, DataTypes) => {
         },
         {
             timestamps: true,
+            indexes: [
+                {
+                    unique: true,
+                    fields: ['name'],
+                },
+            ],
         }
     );
 };

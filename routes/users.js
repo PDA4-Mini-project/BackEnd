@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { Sequelize, sequelize, User, Auth, Profile, Review, WaterBottle } = require('../models');
+const { Sequelize, sequelize, Theme, User, Auth, Profile, Review, WaterBottle, UserTheme } = require('../models');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
@@ -9,7 +9,7 @@ const secretKey = process.env.SECRET_KEY;
 
 router.post('/signup', async (req, res) => {
     //  #swagger.description = '유저 등록'
-    //  #swagger.tags = ['User']
+    //  #swagger.tags = ['users']
     const { _id, name, email, password } = req.body;
 
     const transaction = await sequelize.transaction();
@@ -73,6 +73,16 @@ router.post('/signup', async (req, res) => {
         //트랜잭션 커밋
         await transaction.commit();
 
+        const allThemes = await Theme.findAll();
+
+        for (const theme of allThemes) {
+            await UserTheme.create({
+                user_id: newUser._id,
+                theme_name: theme.name,
+                exp: 0,
+            });
+        }
+
         // JSON 형식으로 성공 메시지 반환
         res.status(201).json({ message: 'User registered successfully' });
     } catch (err) {
@@ -83,6 +93,8 @@ router.post('/signup', async (req, res) => {
 });
 
 router.post('/login', async (req, res) => {
+    //  #swagger.description = '유저 로그인'
+    //  #swagger.tags = ['users']
     const { _id, password } = req.body;
 
     try {
@@ -124,6 +136,8 @@ router.post('/login', async (req, res) => {
 });
 
 router.post('/logout', (req, res) => {
+    //  #swagger.description = '유저 로그아웃'
+    //  #swagger.tags = ['users']
     res.status(200).json({ message: 'Logout successfully' });
 });
 
