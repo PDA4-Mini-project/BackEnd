@@ -42,9 +42,9 @@ router.post('/rooms', async (req, res) => {
             title: title,
             image_url: image_url,
             createdAt: createdAt,
-            user_cnt: 1, // default가 1
-            guest_id: 'null',
             roomId: roomId,
+            guest_id: 'null',
+            user_cnt: 1,
         });
         res.status(200).json({ message: 'Room data saved successfully', roomId: roomId });
     } catch (err) {

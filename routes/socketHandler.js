@@ -18,8 +18,13 @@ module.exports = (server) => {
             socket.to(roomId).emit('candidate', { candidate });
         });
 
-        socket.on('offer', ({ roomId, offer }) => {
-            socket.to(roomId).emit('offer', offer);
+        socket.on('offer', async ({ roomId, userId, offer }) => {
+            async function getRoomInfo(roomId) {
+                return await client.hGetAll(roomId);
+            }
+            const room_info = await getRoomInfo(roomId);
+            const host_id = room_info._id;
+            socket.to(roomId).emit('offer', { host_id, offer });
         });
 
         socket.on('answer', ({ roomId, answer }) => {
@@ -45,9 +50,11 @@ module.exports = (server) => {
             await client.HSET(roomId, 'user_cnt', parseInt(`${numClients}`, 10) + 1);
 
             if (!(roomData._id === userId)) {
+                console.log('새로운 유저 등장');
                 //현재 들어온 유저가 방장이 아닌 경우 인원 수 증가
                 // 게스트 ID 설정
-                await client.HSET(roomId, 'guest_id', `${userId}`);
+                await client.HSET(roomId, 'guest_id', userId);
+
             }
 
             // 방에 새로운 사용자가 참여했다는 것을 방의 모든 사용자에게 알림
@@ -74,7 +81,6 @@ module.exports = (server) => {
                 if (parseInt(roomInfo.user_cnt) === 1) {
                     await client.DEL(roomId);
                 }
-
                 socket.to(roomId).emit('userLeft', userId);
                 socket.leave(roomId);
             });
