@@ -129,8 +129,6 @@ router.post('/login', async (req, res) => {
 
         res.json({ message: 'login successful', _id: user._id });
     } catch (err) {
-        // 배포 전 콘솔은 삭제할 것
-        console.error(err);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
@@ -139,6 +137,70 @@ router.post('/logout', (req, res) => {
     //  #swagger.description = '유저 로그아웃'
     //  #swagger.tags = ['users']
     res.status(200).json({ message: 'Logout successfully' });
+});
+
+router.post('/:userId/consume', async (req, res) => {
+    // #swagger.description = '유저 물뿌리개 감소'
+    //  #swagger.tags = ['users']
+
+    const { userId } = req.params;
+    const { playTime } = req.body;
+
+    try {
+        let requestTime = parseInt(playTime, 10);
+
+        if (isNaN(requestTime) || requestTime % 30 !== 0) {
+            return res.status(406).json({ error: 'Invalid PlayTime' });
+        }
+
+        //요청한 만큼 소비 가능한지 유효성 검사
+        const consumeCount = requestTime / 30;
+
+        const playUser = await WaterBottle.findOne({
+            where: {
+                waterBottle_id: userId,
+            },
+        });
+
+        if (!playUser) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        if (playUser.bottle_count < consumeCount) {
+            return res.status(402).json({ error: 'Insufficient tickets to start the game.' });
+        }
+
+        playUser.bottle_count -= consumeCount;
+        await playUser.save();
+        return res.status(200).json({ message: 'Game started successfully.' });
+    } catch (err) {
+        res.status(500).json({ error: 'server Error' });
+    }
+});
+
+router.patch('/:userId/nickName', async (req, res) => {
+    // #swagger.description = '유저 닉네임 변경'
+    // #swagger.tags = ['users']
+    const { userId } = req.params;
+    const { nickName } = req.body;
+
+    try {
+        const user = await User.findOne({
+            where: {
+                _id: userId,
+            },
+        });
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        user.name = nickName;
+        user.save();
+
+        return res.status(200).json({ message: 'Nickname update successful!!' });
+    } catch (err) {
+        res.status(500).json({ error: 'Internal sever error' });
+    }
 });
 
 module.exports = router;
