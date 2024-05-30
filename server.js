@@ -5,16 +5,9 @@ const swaggerFile = require('./swagger/swagger-output');
 const cors = require('cors');
 const path = require('path');
 const morgan = require('morgan');
-const http = require('http');
-const socketHandler = require('./routes/socketHandler');
-require('dotenv').config();
-
 // index.js에 있는 db.sequelize 객체 모듈을 구조분해로 불러온다.
 const app = express();
-const server = http.createServer(app);
-socketHandler(server);
-
-app.use(express.static(path.join(__dirname, 'public')));
+require('dotenv').config();
 
 app.use(cors()); // temp
 
@@ -34,7 +27,6 @@ app.use('/users', usersRouter);
 app.use('/gardens', gardensRouter);
 app.use('/profile', profileRouter);
 
-
 app.get('/', (req, res) => {
     res.json({ message: 'Hello World!' });
 });
@@ -42,6 +34,6 @@ app.get('/', (req, res) => {
 app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
 // 포트넘버 설정
-server.listen(3000, () => {
+app.listen(3000, () => {
     console.log('Server is running on port 3000.');
 });
