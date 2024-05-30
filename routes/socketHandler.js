@@ -33,7 +33,14 @@ module.exports = (server) => {
         socket.on('answer', ({ roomId, answer }) => {
             socket.to(roomId).emit('answer', answer);
         });
-
+        socket.on('readyStateChanged', async ({ roomId, userId, ready }) => {
+            async function getRoomInfo(roomId) {
+                return await client.hGetAll(roomId);
+            }
+            const room_info = await getRoomInfo(roomId);
+            const host_id = room_info._id;
+            socket.to(roomId).emit('readyStateChanged', { userId: host_id, ready });
+        });
         socket.on('joinRoom', async ({ roomId, userId }) => {
             // 방에 들어오면 CNT 증가해야 함
             const roomData = await client.HGETALL(roomId);
