@@ -6,9 +6,10 @@ const userTheme = require('../models/userTheme');
 const client = createClient();
 const { v4: uuidv4 } = require('uuid');
 const { Profile, User } = require('../models');
+
 (async () => {
     await client.connect();
-    console.log('Connected to Redis');
+    //console.log('Connected to Redis');
 })();
 
 client.on('error', (err) => {
@@ -21,6 +22,8 @@ router.post('/rooms', async (req, res) => {
     if (!_id || !time || !category || !title) {
         return res.status(400).send('All fields (_id, time, category, title) are required');
     }
+
+    //현재 입력받은 방이 존재하는지 확인
 
     try {
         const user = await User.findOne({ where: { _id: _id } });
@@ -66,7 +69,7 @@ router.get('/rooms', async (req, res) => {
             });
         }
 
-        console.log(rooms);
+        // console.log(rooms);
         res.json(rooms);
     } catch (err) {
         return res.status(500).send('Error retrieving from Redis: ' + err.message);
@@ -78,14 +81,21 @@ router.patch('/end', async (req, res) => {
     //  #swagger.tags = ['Gardens']
 
     // 리뷰를 받을 가드너 아이디,가드너 물뿌리개 증가, 새싹 경험치 올리기,
-    const { gardenerId, budId, playTime, themeName, reviewScore } = req.body;
+    const { roomId, reviewScore } = req.body;
     const transaction = await sequelize.transaction();
     try {
         // 유효성 검사
-        if (!gardenerId || !budId || !themeName) {
+        if (!roomId) {
             return res.status(400).json({ error: 'Missing required parameters' });
         }
 
+        //트랜잭션에 필요한 데이터 추출
+        const roomData = await client.HGETALL(roomId);
+        const gardenerId = roomData.guest_id;
+        const budId = roomData._id;
+        const themeName = roomData.category;
+
+        console.log(gardenerId, budId, themeName);
         //리뷰 평가를 안했다면 4점으로 평가
         if (!reviewScore) {
             reviewScore = 4;

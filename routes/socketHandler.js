@@ -5,7 +5,6 @@ const client = createClient();
 module.exports = (server) => {
     (async () => {
         await client.connect();
-        //console.log('Connected to Redis');
     })();
 
     const io = socketIo(server, {
@@ -15,8 +14,6 @@ module.exports = (server) => {
     });
 
     io.on('connection', (socket) => {
-        //console.log('A user connected:', socket.id);
-
         socket.on('candidate', ({ roomId, candidate }) => {
             socket.to(roomId).emit('candidate', { candidate });
         });
@@ -64,13 +61,33 @@ module.exports = (server) => {
                 //현재 들어온 유저가 방장이 아닌 경우 인원 수 증가
                 // 게스트 ID 설정
                 await client.HSET(roomId, 'guest_id', userId);
+
             }
 
             // 방에 새로운 사용자가 참여했다는 것을 방의 모든 사용자에게 알림
             socket.to(roomId).emit('userJoined', { userId, numClients });
 
             // 사용자가 방을 떠날 때 처리
-            socket.on('disconnect', () => {
+            socket.on('disconnect', async () => {
+                // 사용자가 나간 방 정보
+                const roomInfo = await client.HGETALL(roomId);
+
+                // 방의 호스트가 연결이 끊긴 경우
+                if (roomInfo && roomInfo._id === userId) {
+                    // 방 정보 삭제
+                    await client.DEL(roomId);
+
+                    // 방에 있는 모든 사용자에게 방이 삭제되었음을 알림
+                    socket.to(roomId).emit('roomClosed');
+                }
+
+                // 방의 사용자 수 업데이트
+                let room = io.sockets.adapter.rooms.get(roomId);
+                let numClients = room ? room.size : 0;
+                await client.HSET(roomId, 'user_cnt', Math.max(0, numClients)); // 사용자가 나가면서 수 감소
+                if (parseInt(roomInfo.user_cnt) === 1) {
+                    await client.DEL(roomId);
+                }
                 socket.to(roomId).emit('userLeft', userId);
                 socket.leave(roomId);
             });
