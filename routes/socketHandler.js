@@ -21,8 +21,13 @@ module.exports = (server) => {
             socket.to(roomId).emit('candidate', { candidate });
         });
 
-        socket.on('offer', ({ roomId, offer }) => {
-            socket.to(roomId).emit('offer', offer);
+        socket.on('offer', async ({ roomId, userId, offer }) => {
+            async function getRoomInfo(roomId) {
+                return await client.hGetAll(roomId);
+            }
+            const room_info = await getRoomInfo(roomId);
+            const host_id = room_info._id;
+            socket.to(roomId).emit('offer', { host_id, offer });
         });
 
         socket.on('answer', ({ roomId, answer }) => {
@@ -53,10 +58,9 @@ module.exports = (server) => {
                 // 게스트 ID 설정
                 await client.HSET(roomId, 'guest_id', userId);
             }
-            const room_info = await client.HGETALL(roomId);
-            const host_id = room_info._id;
+
             // 방에 새로운 사용자가 참여했다는 것을 방의 모든 사용자에게 알림
-            socket.to(roomId).emit('userJoined', { userId, numClients, host_id });
+            socket.to(roomId).emit('userJoined', { userId, numClients });
 
             // 사용자가 방을 떠날 때 처리
             socket.on('disconnect', () => {
