@@ -1,6 +1,7 @@
 
 # 🌱쏙쏙정원🌱
-> 
+
+![Garden](./src/garden.png)
 
 ## 📅 프로젝트 개요
 
@@ -114,32 +115,43 @@
 ## 🖼 주요 화면
 ​
 ### 🌟 메인 화면
-![Main](./src/main.png){width=250px}
+![Main](./src/main.png)
 ​
 
 ### 🌟 꽃 소개 화면
-![Main](./src/introduce.png){ width=250px }
+![Main](./src/introduce.png)
 ​
 
 ### 🌟 프로필 화면
-![Main](./src/mypage.png){ width=250px }
+![Main](./src/mypage.png)
 ​
 
-### 🌟 정원 리스트 화면
+### 🌟 정원 리스트 화면 - 빈 정원 / 정원 존재
 
-![Garden_List]
-
+![Garden_List](./src/gardenlist-empty.png)
+![Garden_List_empty](./src/garden_list_full.png)
 
 ### 🌟 정원 만들기 화면
-![Make_Garden]
+![Make_Garden](./src/makegarden.png)
 
-### 🌟 정원 화면 
-​![Garden]
+## 🌟 정원 화면  - 새싹 관점
+![새싹관점_waiting](./src/wating.png)
+![새싹관점_beforeStart](./src/beforestart.png)
+
+## 🌟 정원 화면  - 가드너 관점
+![가드너관점_waiting](./src/order-1.png)
+![가드너관점_beforeStart](./src/order-2.png)
+
+
+### 🌟 정원 화면 - 재능 나눔 시작
+![재능 나눔 시작 ](./src/open-garden.png)
 ​
-
 ### 🌟 평가 화면
-![Review]
+![Review](./src/review.png)
 
+### 🌟 회원 가입 화면 및 로그인 화면
+![SignUp](./src/signup.png)
+![Login](./src/login.png)
 ## 컨벤션
 ### 📍  Git 컨벤션
 ```
