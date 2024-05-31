@@ -87,7 +87,6 @@ router.post('/signup', async (req, res) => {
         res.status(201).json({ message: 'User registered successfully' });
     } catch (err) {
         await transaction.rollback();
-        console.log(err);
         res.status(500).json({ error: '회원가입 에러' });
     }
 });

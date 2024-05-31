@@ -45,7 +45,7 @@ module.exports = (server) => {
             }
             const room_info = await getRoomInfo(roomId);
             const host_id = room_info._id;
-            console.log('canStartStateChange ${host_id}, ${start}');
+
             socket.to(roomId).emit('canStartStateChanged', { userId: host_id, canStart });
         });
         socket.on('joinRoom', async ({ roomId, userId }) => {
@@ -67,7 +67,6 @@ module.exports = (server) => {
             await client.HSET(roomId, 'user_cnt', parseInt(`${numClients}`, 10) + 1);
 
             if (!(roomData._id === userId)) {
-                console.log('새로운 유저 등장');
                 //현재 들어온 유저가 방장이 아닌 경우 인원 수 증가
                 // 게스트 ID 설정
                 await client.HSET(roomId, 'guest_id', userId);
