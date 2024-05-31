@@ -34,7 +34,7 @@ db.UserTheme = require('./userTheme')(sequelize, Sequelize);
 sequelize
     .sync({ force: false })
     .then(async () => {
-        console.log('데이터베이스 연결됨.');
+        //데이터베이스 연결
     })
     .catch((err) => {
         console.error(err);

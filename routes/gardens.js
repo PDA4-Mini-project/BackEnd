@@ -9,7 +9,6 @@ const { Profile, User } = require('../models');
 
 (async () => {
     await client.connect();
-    //console.log('Connected to Redis');
 })();
 
 client.on('error', (err) => {
@@ -69,7 +68,6 @@ router.get('/rooms', async (req, res) => {
             });
         }
 
-        // console.log(rooms);
         res.json(rooms);
     } catch (err) {
         return res.status(500).send('Error retrieving from Redis: ' + err.message);
@@ -95,7 +93,6 @@ router.patch('/end', async (req, res) => {
         const budId = roomData._id;
         const themeName = roomData.category;
 
-        console.log(gardenerId, budId, themeName);
         //리뷰 평가를 안했다면 4점으로 평가
         if (!reviewScore) {
             reviewScore = 4;
@@ -117,7 +114,7 @@ router.patch('/end', async (req, res) => {
             return res.status(404).json({ error: 'Water bottle not found' });
         }
 
-        const reward = parseInt(playTime, 10) / 30;
+        const reward = parseInt(roomData.time, 10) / 30;
 
         bottleInfo.bottle_count += reward;
         await bottleInfo.save({ transaction });
@@ -177,7 +174,6 @@ router.patch('/start', async (req, res) => {
     const transaction = await sequelize.transaction();
     try {
         // 유효성 검사
-        console.log('start에서의 roomId', roomId);
         if (!roomId) {
             return res.status(400).json({ error: 'Missing required parameters' });
         }
