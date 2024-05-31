@@ -202,5 +202,20 @@ router.patch('/:userId/nickName', async (req, res) => {
         res.status(500).json({ error: 'Internal sever error' });
     }
 });
+router.get('/:userId/bottle', async (req, res) => {
+    // #swagger.description = '유저 물뿌리개 조회'
+    // #swagger.tags = ['users']
+    const { userId } = req.params;
+    try {
+        const watterBottle = await WaterBottle.findOne({
+            where: {
+                waterBottle_id: userId,
+            },
+        });
+        return res.status(200).json({ bottle_count: watterBottle.bottle_count });
+    } catch (err) {
+        res.status(500).json({ error: 'Internal sever error' });
+    }
+});
 
 module.exports = router;
